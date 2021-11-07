@@ -401,9 +401,6 @@ function p_generar_xades_bes(factura, callback){
         var Reference_ID_number = p_obtener_aleatorio(); //363558 en el ejemplo del SRI
         var SignatureValue_number = p_obtener_aleatorio(); //398963 en el ejemplo del SRI
         var Object_number = p_obtener_aleatorio(); //231987 en el ejemplo del SRI
-        
-        
-
 
         var SignedProperties = '';
 
@@ -630,7 +627,12 @@ function generarFirma(p12File, infoAFirmar, pwdCert, callback2) {
             exponent = hexToBase64(key.e.data[0].toString(16));            
             modulus_pem = modulus = bigint2base64(key.n);
 
-
+            var issuerName = cert.issuer.attributes[4].shortName + '=' + cert.issuer.attributes[4].value + ', ' +
+              cert.issuer.attributes[3].shortName + '=' +cert.issuer.attributes[3].value + ', ' +
+              cert.issuer.attributes[2].shortName + '=' +cert.issuer.attributes[2].value + ', ' +
+              cert.issuer.attributes[1].shortName + '=' +cert.issuer.attributes[1].value + ', ' +
+              cert.issuer.attributes[0].type + '=#' + sha1_base64(cert.issuer.attributes[0].value)
+            
             callback2(signature, certificateX509, modulus, signature, certificateX509_pem, modulus_pem, certificateX509_der_hash, X509SerialNumber, exponent);
         }
     } else {
