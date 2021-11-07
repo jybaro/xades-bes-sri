@@ -651,8 +651,6 @@ function generarFirma(p12File, infoAFirmar, pwdCert, callback2) {
     return pemMessagep7;
 }
 
-
-
 function bigint2base64(bigint){
     var base64 = '';
     base64 = btoa(bigint.toString(16).match(/\w{2}/g).map(function(a){return String.fromCharCode(parseInt(a, 16));} ).join(""));
