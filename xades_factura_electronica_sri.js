@@ -383,7 +383,8 @@ function p_generar_xades_bes(factura, callback){
     
     var pwdCert = 'XXXXXXXXXXX';
     
-    generarFirma(p12xxx, factura, pwdCert, function(firma, certificado, modulus, firma_pem, certificado_pem, modulus_pem, certificateX509_der_hash, X509SerialNumber, exponent) {
+    generarFirma(p12xxx, factura, pwdCert, function(firma, certificado, modulus, firma_pem, certificado_pem, modulus_pem, 
+        certificateX509_der_hash, X509SerialNumber, exponent, issuerName) {
 
         var sha1_factura = sha1_base64(factura.replace('<?xml version="1.0" encoding="UTF-8"?>\n', ''));
 
@@ -401,9 +402,6 @@ function p_generar_xades_bes(factura, callback){
         var Reference_ID_number = p_obtener_aleatorio(); //363558 en el ejemplo del SRI
         var SignatureValue_number = p_obtener_aleatorio(); //398963 en el ejemplo del SRI
         var Object_number = p_obtener_aleatorio(); //231987 en el ejemplo del SRI
-        
-        
-
 
         var SignedProperties = '';
 
@@ -427,7 +425,7 @@ function p_generar_xades_bes(factura, callback){
                         SignedProperties += '</etsi:CertDigest>';
                         SignedProperties += '<etsi:IssuerSerial>';
                             SignedProperties += '<ds:X509IssuerName>';
-                                SignedProperties += 'CN=AC BANCO CENTRAL DEL ECUADOR,L=QUITO,OU=ENTIDAD DE CERTIFICACION DE INFORMACION-ECIBCE,O=BANCO CENTRAL DEL ECUADOR,C=EC';
+                                SignedProperties += issuerName;
                             SignedProperties += '</ds:X509IssuerName>';
                         SignedProperties += '<ds:X509SerialNumber>';
                         
@@ -630,8 +628,13 @@ function generarFirma(p12File, infoAFirmar, pwdCert, callback2) {
             exponent = hexToBase64(key.e.data[0].toString(16));            
             modulus_pem = modulus = bigint2base64(key.n);
 
-
-            callback2(signature, certificateX509, modulus, signature, certificateX509_pem, modulus_pem, certificateX509_der_hash, X509SerialNumber, exponent);
+            var issuerName = cert.issuer.attributes[4].shortName + '=' + cert.issuer.attributes[4].value + ', ' +
+              cert.issuer.attributes[3].shortName + '=' +cert.issuer.attributes[3].value + ', ' +
+              cert.issuer.attributes[2].shortName + '=' +cert.issuer.attributes[2].value + ', ' +
+              cert.issuer.attributes[1].shortName + '=' +cert.issuer.attributes[1].value + ', '
+            
+            callback2(signature, certificateX509, modulus, signature, certificateX509_pem, modulus_pem, 
+                certificateX509_der_hash, X509SerialNumber, exponent, issuerName);
         }
     } else {
         if ($.isEmptyObject(p12File) ) {
@@ -647,8 +650,6 @@ function generarFirma(p12File, infoAFirmar, pwdCert, callback2) {
     
     return pemMessagep7;
 }
-
-
 
 function bigint2base64(bigint){
     var base64 = '';
